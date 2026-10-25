@@ -1,0 +1,55 @@
+
+{% extends "base.html" %}
+
+{% block title %}Add Finding | SecureVault{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div>
+        <p class="eyebrow">VULNERABILITY MANAGEMENT</p>
+        <h1>Add Security Finding</h1>
+        <p class="subtitle">Document the issue, its impact and how to fix it.</p>
+    </div>
+    <a class="btn btn-secondary" href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+</section>
+
+<section class="panel form-panel">
+    <form method="POST" class="finding-form">
+        <div class="form-group">
+            <label for="title">Finding Title</label>
+            <input id="title" name="title" type="text" maxlength="150" placeholder="e.g. Horizontal Privilege Escalation" required>
+        </div>
+
+        <div class="form-group">
+            <label for="severity">Severity</label>
+            <select id="severity" name="severity" required>
+                <option value="">Select severity</option>
+                <option value="Critical">Critical</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="4" placeholder="What is the vulnerability?" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="impact">Security Impact</label>
+            <textarea id="impact" name="impact" rows="3" placeholder="What could an attacker achieve?" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="remediation">Remediation</label>
+            <textarea id="remediation" name="remediation" rows="3" placeholder="How should the issue be fixed?" required></textarea>
+        </div>
+
+        <div class="form-actions">
+            <a class="btn btn-secondary" href="{{ url_for('dashboard') }}">Cancel</a>
+            <button class="btn btn-primary" type="submit">Save Finding</button>
+        </div>
+    </form>
+</section>
+{% endblock %}
