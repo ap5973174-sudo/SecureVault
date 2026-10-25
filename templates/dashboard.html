@@ -1,0 +1,85 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard | SecureVault{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div>
+        <p class="eyebrow">SECURITY OPERATIONS</p>
+        <h1>Vulnerability Dashboard</h1>
+        <p class="subtitle">Track, manage and remediate security findings.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('add_finding') }}">+ Add Finding</a>
+</section>
+
+<section class="panel search-panel">
+    <form method="GET" action="{{ url_for('dashboard') }}" class="search-form">
+        <input type="text" name="search" placeholder="Search finding by title..." value="{{ search }}">
+        <select name="severity">
+            <option value="">All Severities</option>
+            {% for level in ["Critical", "High", "Medium", "Low"] %}
+            <option value="{{ level }}" {% if severity == level %}selected{% endif %}>{{ level }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Reset</a>
+    </form>
+</section>
+
+<section class="stats-grid">
+    <div class="stat-card"><p>Total Findings</p><h2>{{ counts.total }}</h2><span>All recorded issues</span></div>
+    <div class="stat-card critical"><p>Critical</p><h2>{{ counts.critical }}</h2><span>Highest priority</span></div>
+    <div class="stat-card high"><p>High</p><h2>{{ counts.high }}</h2><span>High priority</span></div>
+    <div class="stat-card medium"><p>Medium</p><h2>{{ counts.medium }}</h2><span>Moderate priority</span></div>
+    <div class="stat-card low"><p>Low</p><h2>{{ counts.low }}</h2><span>Lower priority</span></div>
+</section>
+
+<section class="panel">
+    <div class="panel-header">
+        <div><h2>Security Findings</h2><p>Review and manage your recorded vulnerabilities.</p></div>
+        <span class="count-badge">{{ findings|length }} records</span>
+    </div>
+
+    {% if findings %}
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Finding</th><th>Severity</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+                {% for finding in findings %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('finding_detail', finding_id=finding.id) }}"><strong>{{ finding.title }}</strong></a>
+                        <small>#{{ finding.id }}</small>
+                    </td>
+                    <td><span class="severity {{ finding.severity|lower }}">{{ finding.severity }}</span></td>
+                    <td>
+                        <form method="POST" action="{{ url_for('update_status', finding_id=finding.id) }}" class="inline-form">
+                            <select name="status" aria-label="Finding status">
+                                {% for status in ["Open", "In Progress", "Resolved"] %}
+                                <option value="{{ status }}" {% if finding.status == status %}selected{% endif %}>{{ status }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="btn btn-small" type="submit">Save</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form method="POST" action="{{ url_for('delete_finding', finding_id=finding.id) }}" onsubmit="return confirm('Delete this finding?');">
+                            <button class="btn btn-danger btn-small" type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">◇</div>
+        <h3>No findings yet</h3>
+        <p>Start by adding your first security finding.</p>
+        <a class="btn btn-primary" href="{{ url_for('add_finding') }}">Add Your First Finding</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
